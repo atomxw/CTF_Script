@@ -60,7 +60,7 @@ with open(FILE_PATH, "r") as f:
     data = f.read().splitlines()
 
 def get_info(original=False):
-    output = ""
+    output = []
     for line in data:
         if line[4:6] == "00" :
             continue
@@ -70,9 +70,24 @@ def get_info(original=False):
             continue
 
         if line[4:6] in normalKeys:
-            output += shiftKeys[line[4:6]] if (int(line[:2], 16) >> 1 & 1 == 1) or (int(line[:2], 16) >> 6 & 1 == 1) else normalKeys[line[4:6]]
+            output.append(shiftKeys[line[4:6]] if (int(line[:2], 16) >> 1 & 1 == 1) or (int(line[:2], 16) >> 6 & 1 == 1) else normalKeys[line[4:6]])
     return output
 
-print(f"原始数据: {get_info(True)}")
-flag = get_info().replace('<SPACE>', ' ').replace('<ALT>', '\t').replace('<CAP>', '').replace('<RET>', '\n')
-print(f"正常数据: {flag}")
+data = get_info(True)
+print(f"原始数据: {''.join(data)}")
+
+flag = []
+for i in data:
+    if i == "<SPACE>":
+        flag.append(" ")
+    elif i == "<ALT>":
+        flag.append("\t")
+    elif i == "<CAP>":
+        flag.append("")
+    elif i == "<RET>":
+        flag.append("\n")
+    elif i == "<DEL>":
+        flag.pop(-1)
+    else:
+        flag.append(i)
+print(f"正常数据: {''.join(flag)}")
