@@ -1,4 +1,5 @@
 import os
+import tools
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,8 +16,11 @@ TITLE = ["LEFT", "RIGHT", "ALL", "MOVE_LEFT", "MOVE_RIGHT", "MOVE_ALL"]
 FILE_PATH = os.path.abspath(args.f)
 
 def read_file():
-    with open(FILE_PATH, "r") as f:
-        data = f.read().splitlines()
+    if FILE_PATH.endswith(".txt"):
+        with open(FILE_PATH, "r") as f:
+            data = f.read().splitlines()
+    else:
+        data = tools.get_data(FILE_PATH)
     return data
 
 def get_pos():

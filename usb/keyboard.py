@@ -13,6 +13,7 @@ BYTE3--BYTE8 -- 这六个为普通按键
 from: https://blog.csdn.net/fjh1997/article/details/105841367
 '''
 import os
+import tools
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", type=str, default=None, required=True,
@@ -56,8 +57,12 @@ shiftKeys = {
         "50":"<LeftArrow>", "51":"<DownArrow>", "52": "<UpArrow>", "53":"<NumLock>", "54":"/", 
         "55":"*", "56":"-", "57":"+", "58":"<RET>", "59":"1", "5a":"2", "5b":"3", "5c":"4", "5d":"5", 
         "5e":"6", "5f":"7", "60":"8", "61":"9", "62":"0"}
-with open(FILE_PATH, "r") as f:
-    data = f.read().splitlines()
+
+if FILE_PATH.endswith(".txt"):
+    with open(FILE_PATH, "r") as f:
+        data = f.read().splitlines()
+else:
+    data = tools.get_data(FILE_PATH)
 
 def get_info(original=False):
     output = []
@@ -87,7 +92,8 @@ for i in data:
     elif i == "<RET>":
         flag.append("\n")
     elif i == "<DEL>":
-        flag.pop(-1)
+        if flag != []:
+            flag.pop(-1)
     else:
         flag.append(i)
 print(f"正常数据: {''.join(flag)}")
