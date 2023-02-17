@@ -65,5 +65,7 @@ if __name__ == '__main__':
             else:
                 plot_point(all_pos[count%3], ax, move=True)
 
+    print("Done.")
     plt.tight_layout()
     plt.show()
+    
