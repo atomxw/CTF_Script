@@ -97,3 +97,4 @@ for i in data:
     else:
         flag.append(i)
 print(f"正常数据: {''.join(flag)}")
+os.system("pause")
