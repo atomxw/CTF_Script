@@ -6,6 +6,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', type=str, default=None, required=True,
                     help='输入文件名称')
+parser.add_argument("-new", nargs='?', const=True, default=False,
+                    help="另一种方式")
 args = parser.parse_args()
 
 file_path = os.path.abspath(args.f)
@@ -53,5 +55,13 @@ if __name__ == '__main__':
     lis = sum(lis, [])
 
     with open(f"spiral_{file_name}{file_suffix}", "wb") as f:
-        for i in lis:
-            f.write(data[i-1].to_bytes(1, byteorder="big", signed=False))
+        if args.new:
+            arr = [0] * len(data)
+            for i in range(len(lis)):
+                arr[lis[i]-1] = data[i]
+            
+            for x in arr:
+                f.write(x.to_bytes(1, byteorder="big", signed=False))
+        else:
+            for i in lis:
+                f.write(data[i-1].to_bytes(1, byteorder="big", signed=False))
