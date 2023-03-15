@@ -94,21 +94,23 @@ def pngbaoli_def(filename):
 
 
 if __name__ == '__main__':
-    if crc32key == original_crc32: # 计算crc对比原始crc
-        print("[-] 计算CRC32, 宽高没有问题, 开始尝试暴力破解!(感谢老铜匠)")
-        pngbaoli_def(args.f)
+    if os.path.splitext(png_name)[1] == ".png":
+        if crc32key == original_crc32: # 计算crc对比原始crc
+            print("[-] 计算CRC32, 宽高没有问题, 开始尝试暴力破解!(感谢老铜匠)")
+            pngbaoli_def(args.f)
+        else:
+            for width, height in itertools.product(range(0x1FFF), range(0x1FFF)): # 理论上0x FF FF FF FF，但考虑到屏幕实际/cpu，0x1FFF就差不多了，也就是8191宽度和高度
+                data = bin_data[12:16] + struct.pack('>i', width) + struct.pack('>i', height) + bin_data[24:29]
+                crc32 = zlib.crc32(data)
+                
+                if(crc32 == original_crc32): # 计算当图片大小为width:height时的CRC校验值，与图片中的CRC比较，当相同，则图片大小已经确定
+                    with open(os.path.join(base_dir, f"fix_{png_name}"), "wb") as f:
+                        print(f"[-] CRC32: {hex(original_crc32)}")
+                        print(f"[-] 宽度: {width}, hex: {hex(width)}")
+                        print(f"[-] 高度: {height}, hex: {hex(height)}")
+                        f.write(bin_data[:16] + struct.pack(">i", width) + struct.pack(">i", height) + bin_data[24:])
+                        print("[-] 已经为您保存到运行目录中!")
+                        break
     else:
-        for width, height in itertools.product(range(0x1FFF), range(0x1FFF)): # 理论上0x FF FF FF FF，但考虑到屏幕实际/cpu，0x1FFF就差不多了，也就是8191宽度和高度
-            data = bin_data[12:16] + struct.pack('>i', width) + struct.pack('>i', height) + bin_data[24:29]
-            crc32 = zlib.crc32(data)
-            
-            if(crc32 == original_crc32): # 计算当图片大小为width:height时的CRC校验值，与图片中的CRC比较，当相同，则图片大小已经确定
-                with open(os.path.join(base_dir, f"fix_{png_name}"), "wb") as f:
-                    print(f"[-] CRC32: {hex(original_crc32)}")
-                    print(f"[-] 宽度: {width}, hex: {hex(width)}")
-                    print(f"[-] 高度: {height}, hex: {hex(height)}")
-                    f.write(bin_data[:16] + struct.pack(">i", width) + struct.pack(">i", height) + bin_data[24:])
-                    print("[-] 已经为您保存到运行目录中!")
-                    break
-
+        print("[-] 您的文件后缀名不为PNG!")
     time.sleep(1)
