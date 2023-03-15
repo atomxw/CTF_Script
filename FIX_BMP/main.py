@@ -2,8 +2,6 @@ import os
 import time
 import math
 import argparse
-import numpy as np
-from PIL import Image
 
 
 parser = argparse.ArgumentParser()
@@ -39,9 +37,8 @@ if __name__ == '__main__':
 
     with open(file_path, "rb") as f:
         data = f.read()
-
-    img = np.array(Image.open(file_path).convert('RGB'), dtype=np.uint8)
-    row, col = img.shape[:2]
+    col = abs(int.from_bytes(data[0x12:0x12+4], byteorder="little", signed=True))
+    row = abs(int.from_bytes(data[0x16:0x16+4], byteorder="little", signed=True))
     pixels_size = get_pixels_size(data)
 
     width, height = pixels_size // row, pixels_size // col
