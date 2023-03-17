@@ -8,7 +8,7 @@
 
 <br>
 
-### Usage
+# Usage
 
 **键盘流量：**
 
@@ -33,4 +33,20 @@ Usage: python .\mouse.py -f <xxx.pcap/xxx.pcapng/xxx.txt> [-new]
         python .\mouse.py -f .\demo\[UNCTF2022]CatchJerry.txt
         python .\mouse.py -f .\demo\[GFCTF2021]双击开始冒险.txt -new
 ```
+
+<br>
+
+# 效果
+
+**键盘流量：**
+
+<img src="./images/image3.png">
+
+<br>
+
+**鼠标流量：**
+
+<img src="./images/image1.png">
+
+<img src="./images/image2.png">
 
