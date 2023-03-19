@@ -10,13 +10,24 @@
 **爆破流程：**
 
 1. 第一次尝试，会默认宽度正确，爆破高度
-
 2. 第二次尝试，会默认高度正确，爆破宽度
 3. 第三次尝试，会爆破宽度和高度
 
 <br>
 
-# 效果:
+# Usage
+
+```
+Usage: python .\main.py -f <xxx.png>
+    example:
+        python .\main.py -f .\demo\test.png
+```
+
+虽然使用了Go语言重构了，但是使用方式还是和以前一样，因为我用Python调用 `BrutePNG.exe`
+
+<br>
+
+# 效果
 
 **正常情况：**
 
@@ -25,3 +36,14 @@
 **暴力爆破：**
 
 <img src="./images/image2.png">
+
+<br>
+
+# 优化思路
+
+我将Python语言重构到了Go语言，针对大尺寸图片的爆破，提升效果如下：
+
+Go只需要4s，Python需要12s
+
+<img src="./images/image3.png">
+
