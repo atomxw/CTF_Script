@@ -43,7 +43,7 @@ Usage: python .\main.py -f <xxx.png>
 
 我将Python语言重构到了Go语言，针对大尺寸图片的爆破，提升效果如下：
 
-Go只需要3s，Python需要12s
+Go只需要560ms，Python需要12s
 
 <img src="./images/go.png">
 
