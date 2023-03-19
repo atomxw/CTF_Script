@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"reflect"
 	"time"
 )
 
@@ -89,14 +88,14 @@ func main() {
     start = time.Now()
     fmt.Println("[-] 爆破高度中...")
     for height := 0; height < 0x1FFF; height++ {
-        if reflect.DeepEqual(calculation_crc32(data, int(binary.BigEndian.Uint32(data[0x10:0x14])), height), original_crc32) {
+        if calculation_crc32(data, int(binary.BigEndian.Uint32(data[0x10:0x14])), height) == original_crc32 {
             save_png(data, int(binary.BigEndian.Uint32(data[0x10:0x14])), height, original_crc32, fileName)
         }
     }
 
     fmt.Println("[-] 爆破宽度中...")
     for width := 0; width < 0x1FFF; width++ {
-        if reflect.DeepEqual(calculation_crc32(data, width, int(binary.BigEndian.Uint32(data[0x14:0x18]))), original_crc32) {
+        if calculation_crc32(data, width, int(binary.BigEndian.Uint32(data[0x14:0x18]))) == original_crc32 {
             save_png(data, width, int(binary.BigEndian.Uint32(data[0x14:0x18])), original_crc32, fileName)
         }
     }
@@ -104,7 +103,7 @@ func main() {
     fmt.Println("[-] 爆破宽度和高度中...")
     for width := 0; width < 0x1FFF; width++ {
         for height := 0; height < 0x1FFF; height++ {
-            if reflect.DeepEqual(calculation_crc32(data, width, height), original_crc32) {
+            if calculation_crc32(data, width, height) == original_crc32 {
                 save_png(data, width, height, original_crc32, fileName)
             }
         }
