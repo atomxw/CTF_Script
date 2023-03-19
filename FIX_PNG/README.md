@@ -43,7 +43,9 @@ Usage: python .\main.py -f <xxx.png>
 
 我将Python语言重构到了Go语言，针对大尺寸图片的爆破，提升效果如下：
 
-Go只需要560ms，Python需要12s
+遇到高度正确的，爆破高度只需要1ms；爆破高度和宽度Go只需要560ms，Python需要12s
+
+<img src="./images/go_width.png">
 
 <img src="./images/go.png">
 
