@@ -46,7 +46,6 @@ func save_png(data []byte, width int, height int, original_crc32 uint32, PNG_NAM
     fmt.Printf("[-] 高度: %d, hex: %x\n", height, height)
     fmt.Printf("[-] 运行时间为：%d小时 %d分钟 %d秒 %d毫秒\n", hours, minutes, seconds, milliseconds)
     fmt.Printf("[-] CRC32: %x, 已经为您保存到运行目录中!", original_crc32)
-    time.Sleep(time.Second)
     os.Exit(0)
 }
 
