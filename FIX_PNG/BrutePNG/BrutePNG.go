@@ -87,25 +87,47 @@ func main() {
 
     start = time.Now()
     fmt.Println("[-] 爆破高度中...")
-    for height := 0; height < 0x1FFF; height++ {
-        if calculation_crc32(data, int(binary.BigEndian.Uint32(data[0x10:0x14])), height) == original_crc32 {
-            save_png(data, int(binary.BigEndian.Uint32(data[0x10:0x14])), height, original_crc32, fileName)
+    // 二分搜索算法
+    low, high := 0, 0x1FFF
+    for low <= high {
+        mid := (low + high) / 2
+        if calculation_crc32(data, int(binary.BigEndian.Uint32(data[0x10:0x14])), mid) == original_crc32 {
+            save_png(data, int(binary.BigEndian.Uint32(data[0x10:0x14])), mid, original_crc32, fileName)
+        } else if calculation_crc32(data, int(binary.BigEndian.Uint32(data[0x10:0x14])), mid) < original_crc32 {
+            low = mid + 1
+        } else {
+            high = mid - 1
         }
     }
 
     fmt.Println("[-] 爆破宽度中...")
-    for width := 0; width < 0x1FFF; width++ {
-        if calculation_crc32(data, width, int(binary.BigEndian.Uint32(data[0x14:0x18]))) == original_crc32 {
-            save_png(data, width, int(binary.BigEndian.Uint32(data[0x14:0x18])), original_crc32, fileName)
+    // 二分搜索算法
+    low, high = 0, 0x1FFF
+    for low <= high {
+        mid := (low + high) / 2
+        if calculation_crc32(data, mid, int(binary.BigEndian.Uint32(data[0x14:0x18]))) == original_crc32 {
+            save_png(data, mid, int(binary.BigEndian.Uint32(data[0x14:0x18])), original_crc32, fileName)
+        } else if calculation_crc32(data, mid, int(binary.BigEndian.Uint32(data[0x14:0x18]))) < original_crc32 {
+            low = mid + 1
+        } else {
+            high = mid - 1
         }
     }
 	
     fmt.Println("[-] 爆破宽度和高度中...")
+    // 并行化代码
     for width := 0; width < 0x1FFF; width++ {
-        for height := 0; height < 0x1FFF; height++ {
-            if calculation_crc32(data, width, height) == original_crc32 {
-                save_png(data, width, height, original_crc32, fileName)
+        go func(width int) {
+            for height := 0; height < 0x1FFF; height++ {
+                if calculation_crc32(data, width, height) == original_crc32 {
+                    save_png(data, width, height, original_crc32, fileName)
+                }
             }
-        }
+        }(width)
     }
+    // time.Sleep(time.Second * 10)
+    
+    /* 在程序的最后，有一行代码time.Sleep(time.Second * 10)，它的作用是让程序暂停10秒钟，
+    以确保所有的goroutine都有足够的时间来完成它们的执行。如果程序立即退出，一些goroutine可
+    能没有足够的时间来完成它们的执行，输出可能不完整。 */
 }
