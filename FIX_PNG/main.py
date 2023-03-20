@@ -43,6 +43,7 @@ if __name__ == '__main__':
 
     if os.path.splitext(PNG_NAME)[1] != ".png":
         print("[-] 您的文件后缀名不为PNG!")
+        time.sleep(1)
         exit(-1)
 
     if crc32key == original_crc32: # 计算crc对比原始crc
