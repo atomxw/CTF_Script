@@ -31,7 +31,7 @@ Usage: python .\main.py -f <xxx.png>
 
 **正常情况：**
 
-<img src="./images/image1.png">
+<img src="./images/go_width.png">
 
 **暴力爆破：**
 
