@@ -34,6 +34,10 @@ def get_pixels_size(data):
 
 if __name__ == '__main__':
     file_path = os.path.abspath(args.f)
+    if  os.path.splitext(args.f)[-1] != ".bmp":
+        print("您的文件后缀名不为BMP!")
+        time.sleep(1)
+        exit(-1)
 
     with open(file_path, "rb") as f:
         data = f.read()
