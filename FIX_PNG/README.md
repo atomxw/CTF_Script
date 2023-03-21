@@ -31,7 +31,7 @@ Usage: python .\main.py -f <xxx.png>
 
 **正常情况：**
 
-<img src="./images/go_width.png">
+<img src="./images/python_go.png">
 
 **暴力爆破：**
 
@@ -41,12 +41,10 @@ Usage: python .\main.py -f <xxx.png>
 
 # 优化思路
 
-我将Python语言重构到了Go语言，针对大尺寸图片的爆破，提升效果如下：
+我将Python语言重构到了Go语言，针对大尺寸图片（1920*1080）的爆破，提升效果如下：
 
-遇到高度正确的，爆破高度只需要1ms；爆破高度和宽度Go只需要560ms，Python需要12s
+Go：爆破高度1ms，爆破宽度3ms，爆破高度和宽度154ms；Python：爆破宽度和高度12s
 
-<img src="./images/go_width.png">
-
-<img src="./images/go.png">
+<img src="./images/python_go.png">
 
 <img src="./images/python.png">
