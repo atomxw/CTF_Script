@@ -43,7 +43,7 @@ Usage: python .\main.py -f <xxx.png>
 
 我将Python语言重构到了Go语言，针对大尺寸图片（1920*1080）的爆破，提升效果如下：
 
-Go：爆破高度1ms，爆破宽度3ms，爆破高度和宽度154ms；Python：爆破宽度和高度12s
+Go：爆破高度 `1ms`，爆破宽度 `2ms`，爆破高度和宽度 `189ms`；Python：爆破宽度和高度 `12s`
 
 <img src="./images/python_go.png">
 
