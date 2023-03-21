@@ -31,7 +31,7 @@ Usage: python .\main.py -f <xxx.png>
 
 **正常情况：**
 
-<img src="./images/python_go.png">
+<img src="./images/python&go.png">
 
 **暴力爆破：**
 
@@ -45,6 +45,6 @@ Usage: python .\main.py -f <xxx.png>
 
 Go：爆破高度 `1ms`，爆破宽度 `2ms`，爆破高度和宽度 `189ms`；Python：爆破宽度和高度 `12s`
 
-<img src="./images/python_go.png">
+<img src="./images/python&go.png">
 
 <img src="./images/python.png">
