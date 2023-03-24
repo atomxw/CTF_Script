@@ -163,6 +163,7 @@ func main() {
 	fmt.Println("[-] 爆破宽度和高度中...")
 	crack_width_height(data, targetCRC)
 
+	fmt.Println("[-] 已经帮您爆破完了0x1FFF的宽高了!")
 	// time.Sleep(time.Second * 10)
 }
 
