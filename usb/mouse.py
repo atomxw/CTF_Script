@@ -29,8 +29,13 @@ def get_pos():
     posx, posy = 0, 0
     pos_left, pos_right, pos_all = [], [], []
     for line in data:
-        x, y = (int(line[4:6], 16), int(line[8:10], 16)) if args.new else (int(line[2:4], 16), int(line[5:7], 16))
-            
+        if args.new and len(line) != 16 or not args.new and len(line) != 8:
+            continue
+        elif args.new:
+            x, y = int(line[4:6], 16), int(line[8:10], 16)
+        else:
+            x, y = int(line[2:4], 16), int(line[5:7], 16)
+
         if x > 127:
             x -= 256
         if y > 127:
