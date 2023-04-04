@@ -67,6 +67,9 @@ else:
 def get_info(original=False):
     output = []
     for line in data:
+        if len(line) != 16:
+            continue
+        
         if line[4:6] == "00" :
             continue
 
