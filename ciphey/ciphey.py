@@ -15,7 +15,7 @@ def get_text():
     win32clipboard.CloseClipboard()
     return d.decode('GBK')
 
-ciphey_path = "D:\Python\Scripts\ciphey.exe"
+ciphey_path = "python -m ciphey"
 if args.f:
     os.system(f"{ciphey_path} -f {os.path.abspath(args.f)}")
 else:
