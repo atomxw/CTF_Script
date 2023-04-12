@@ -8,8 +8,9 @@ def encode(D, K):
 		D[i] = D[i] ^ c
 	return bytes(D)
 
-key = b"d8ea7326e6ec5916"
-cipher_text = "J+5pNzMyNmU2mij7dMD/qHMAa1dTUh6rZrUuY2l7eDVot058H+AZShmyrB3w/OdLFa2oeH/jYdeYr09l6fxhLPMsLeAwg8MkGmC+Nbz1+kYvogF0EFH1p/KFEzIcNBVfDaa946G+ynGJob9hH1+WlZFwyP79y4/cvxxKNVw8xP1OZWE3"
+key = b"3c6e0b8a9c15224a"
+cipher_text = ""[16:-16]
+cipher_text = ""
 
 out = encode(base64.b64decode(cipher_text), key)
 print(gzip.decompress(out))
