@@ -21,7 +21,7 @@ def producer(dic_path, queue, thread_num):
         queue.put(password)
     
     for _ in range(thread_num):
-        queue.put(None)    
+        queue.put(None)
 
 def consumer(enc, queue_password, f, version):
     while True:
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', type=str, default=None, required=True,
                         help='输入字典的文件名称')
     parser.add_argument('-v', type=int, default=3,
-                        help='输入冰蝎子流量版本')
+                        help='输入冰蝎流量版本')
     parser.add_argument('-p', type=int, default=mp.cpu_count(),
                         help='输入多线程数')
     args = parser.parse_args()
