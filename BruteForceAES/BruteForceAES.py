@@ -1,6 +1,7 @@
 import os
 import mmap
 import chardet
+import datetime
 import argparse
 import threading
 import multiprocessing as mp
@@ -32,6 +33,7 @@ def consumer(enc, queue_password, f, version):
         aes = AesCipher(key=pwd, version=version)
         if (dec := aes.decrypt(enc)):
             if (result := chardet.detect(dec)) and result["encoding"] in ["GB2312", "UTF-16", "utf-8", "UTF-8-SIG", "ascii"] and result["confidence"] > 0.8:
+                print(f"Find Password: {pwd.decode()}")
                 message = f"Find Password: {pwd.decode()}, AES key: {aes.key.decode()}, Message: {str(dec)}" + "\n"
                 f.write(message)
 
@@ -55,6 +57,9 @@ if __name__ == '__main__':
     t.start()
 
     # enc = AesCipher.decodeBase64("TyXq0tb3mQYD6Ch0FMHJpgsBLOdQsSiFwdEtJEKUEwl4MMV404ZdswnxNWB966ma")
+    formatted_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{formatted_date}] 开始爆破, 线程数: {thread_num}.")
+
     enc = AesCipher.decodeBase64("qPm3sf5ED5vjWYAJhpDBu9LXU7LgIuNSXa1TLo+aWXjp9SpHbDQJqTuJXlaW2NWG")
     
     with open("output.txt", "w", encoding='utf-8') as f:
@@ -66,3 +71,7 @@ if __name__ == '__main__':
 
         for t in threads:
             t.join()
+
+    formatted_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{formatted_date}] 爆破结束!")
+    
