@@ -1,7 +1,6 @@
 import os
 import win32con
 import win32clipboard
-from rich.table import Table
 from rich.console import Console
 from prettytable import PrettyTable
 
@@ -80,7 +79,7 @@ if __name__ == "__main__":
         ret = int2str(byte_list, is_add=False)
         ret.extend(int2str(byte_list, is_add=True))
 
-        console.print("[-] 逐字节增加减少0xFF: ", style="bold #00ffff")
+        console.print("[*] 逐字节增加减少0xFF: ", style="bold #00ffff")
         show_table(ret, is_all=False)
         if console.input("[bold blue]是否需要全部输出? [/]([bold red]y[/]/[bold green]N[/]): ") in ["Y", "y"]:
             show_table(ret, is_all=True)
@@ -88,7 +87,7 @@ if __name__ == "__main__":
         console.print("[-] 输入的字符串不符合逐字节增加减少!", style="bold #00ffff")
         
     try:
-        console.print("\n[-] 逐字节异或0xFF: ", style="bold #00ffff")
+        console.print("\n[*] 逐字节异或0xFF: ", style="bold #00ffff")
         ret = xor_str(text)
         show_xor_table(ret, is_all=False)
         if console.input("[bold blue]是否需要全部输出? [/]([bold red]y[/]/[bold green]N[/]): ") in ["Y", "y"]:
