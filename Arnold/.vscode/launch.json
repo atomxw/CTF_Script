@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["-f", "flag_1_1_2.png", "-t", "decode", "-a", "1", "-b", "2"]
+            "args": ["-f", "./demo/sictf2023_2_1_2.bmp", "-t", "decode"]
         }
     ]
 }
