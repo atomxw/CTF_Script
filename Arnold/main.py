@@ -2,7 +2,7 @@ import os
 import cv2
 import argparse
 import numpy as np
-from PIL import Image
+from core import ImageCore, PathCore
 
 
 parser = argparse.ArgumentParser()
@@ -10,11 +10,11 @@ parser.add_argument('-t', type=str, default=None, required=True, choices=["encod
                     help='encode | decode')
 parser.add_argument('-f', type=str, default=None, required=True,
                     help='输入文件名称')
-parser.add_argument('-n', type=int, default=1, required=False,
+parser.add_argument('-n', type=str, default=1, required=False,
                     help='输入参数n')
-parser.add_argument('-a', type=int, default=None, required=True,
+parser.add_argument('-a', type=str, default=None, required=False,
                     help='输入参数a')
-parser.add_argument('-b', type=int, default=None, required=True,
+parser.add_argument('-b', type=str, default=None, required=False,
                     help='输入参数b')
 args  = parser.parse_args()
 
@@ -43,8 +43,8 @@ args  = parser.parse_args()
 #         img = np.copy(new_img)
 #     return new_img
 
-def arnold(img, n, a, b):
-    new_img = np.zeros((r, c, 3), np.uint8)
+def arnold(img, n, a, b, r, c, copy=True):
+    new_img = np.empty_like(img, np.uint8)
 
     for _ in range(n):
         y, x = np.meshgrid(np.arange(c), np.arange(r))
@@ -52,42 +52,75 @@ def arnold(img, n, a, b):
         new_y = (a * x + (a * b + 1) * y) % c
         new_img[new_x, new_y] = img
         img = np.copy(new_img)
+        if copy:
+            img = np.copy(new_img)
     return new_img
 
-def dearnold(img, n, a, b):
-    new_img = np.zeros((r, c, 3), np.uint8)
+def dearnold(img, n, a, b, r, c, copy=True):
+    new_img = np.empty_like(img, np.uint8)
 
     for _ in range(n):
         y, x = np.meshgrid(np.arange(c), np.arange(r))
         new_x = ((a * b + 1) * x - b * y) % r
         new_y = (-a * x + y) % c
         new_img[new_x, new_y] = img
-        img = np.copy(new_img)
+        if copy:
+            img = np.copy(new_img)
     return new_img
 
+def saveImage(new_img, new_img_copy, n, a, b):
+    savaPath = os.path.join(saveDir, f"{file_name}_{n}_{a}_{b}.png")
+    ImageCore.save_img(savaPath, new_img, ext=".png")
+    savaPath = os.path.join(saveDir, f"{file_name}_{n}_{a}_{b}_copy.png")
+    ImageCore.save_img(savaPath, new_img_copy, ext=".png")
+        
+def start(img_path, n, a, b):
+    img = ImageCore.read_img(img_path, cv2.IMREAD_UNCHANGED)
+    r, c = img.shape[:2]
+    
+    img_copy = img.copy()
+    if args.t == "encode":
+        new_img = arnold(img_copy, n, a, b, r, c, copy=False)
+        new_img_copy = arnold(img_copy, n, a, b, r, c)
+    elif args.t == "decode":
+        new_img = dearnold(img_copy, n, a, b, r, c, copy=False)
+        new_img_copy = dearnold(img_copy, n, a, b, r, c)
+
+    saveImage(new_img, new_img_copy, n, a, b)
+
+def bruteForce(img_path):
+    if n := input("请输入n的范围 (如:1-10, 回车默认为1): "):
+        n_lis = list(map(lambda x: int(x), n.split("-")))
+    else:
+        n_lis = [1, 2]
+
+    if a := input("请输入a的范围 (如:1-10, 回车默认为1-10): "):
+        a_lis = list(map(lambda x: int(x), a.split("-")))
+    else:
+        a_lis = [1, 10]
+        
+    if b := input("请输入b的范围 (如:1-10, 回车默认为1-10): "):
+        b_lis = list(map(lambda x: int(x), b.split("-")))
+    else:
+        b_lis = [1, 10]
+
+    for n in range(n_lis[0], n_lis[1]):
+        for a in range(a_lis[0], a_lis[1]):
+            for b in range(b_lis[0], b_lis[1]):
+                start(img_path, n, a, b)
 
 if __name__ == '__main__':
     img_path = os.path.abspath(args.f)
+    saveDir = "./output"
+    os.makedirs(saveDir, exist_ok=True)
+    PathCore.clear_and_create_dir(saveDir)
+
     file_name = os.path.splitext(img_path)[0].split("\\")[-1]
-    img = np.array(Image.open(img_path).convert("RGB"), np.uint8)[:,:,::-1]
-    r, c = img.shape[:2]
-    n, a, b = args.n, args.a, args.b
 
-    if args.t == "encode":
-        new_img = arnold(img, n, a, b)
+    if args.a is None and args.b is None:
+        bruteForce(img_path)
+        exit(0)
+    
+    n, a, b = eval(args.n), eval(args.a), eval(args.b)
+    start(img_path, n, a, b)
 
-        # b = 0
-        # for a in range(300, 303):
-        #     new_img = arnold(img, n, a, b)
-        #     cv2.imwrite(f"./out_r/{file_name}_{n}_{a}_{b}.png", new_img)
-        # exit()
-    elif args.t == "decode":
-        new_img = dearnold(img, n, a, b)
-
-        # a = 301
-        # for b in range(368, 378):
-        #     new_img = dearnold(img, n, a, b)
-        #     cv2.imwrite(f"./out_r/{file_name}_{n}_{a}_{b}.png", new_img)
-        # exit()
-
-    cv2.imwrite(f"./{file_name}_{n}_{a}_{b}.png", new_img)
