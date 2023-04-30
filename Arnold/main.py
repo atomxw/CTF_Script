@@ -69,9 +69,9 @@ def dearnold(img, n, a, b, r, c, copy=True):
     return new_img
 
 def saveImage(new_img, new_img_copy, n, a, b):
-    savaPath = os.path.join(saveDir, f"{file_name}_{n}_{a}_{b}.png")
+    savaPath = os.path.join(saveDir, f"{file_name}_n{n}_a{a}_b{b}.png")
     ImageCore.save_img(savaPath, new_img, ext=".png")
-    savaPath = os.path.join(saveDir, f"{file_name}_{n}_{a}_{b}_copy.png")
+    savaPath = os.path.join(saveDir, f"{file_name}_n{n}_a{a}_b{b}_copy.png")
     ImageCore.save_img(savaPath, new_img_copy, ext=".png")
         
 def start(img_path, n, a, b):
