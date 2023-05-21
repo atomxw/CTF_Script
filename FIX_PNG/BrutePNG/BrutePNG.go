@@ -153,24 +153,29 @@ func main() {
 	start = time.Now()
 	// 并行化爆破高度
 	fmt.Println("[-] 爆破高度中...")
-	crack_height(data, height, targetCRC)
+	crack_height(data, width, targetCRC)
+	time.Sleep(time.Second * 10)
 	
 	// 并行化爆破宽度
 	fmt.Println("[-] 爆破宽度中...")
-	crack_width(data, width, targetCRC)
+	crack_width(data, height, targetCRC)
+	time.Sleep(time.Second * 10)
 
 	// 并行化爆破高度和宽度
 	fmt.Println("[-] 爆破宽度和高度中...")
 	crack_width_height(data, targetCRC)
+	time.Sleep(time.Second * 10)
 
 	fmt.Println("[-] 已经帮您爆破完了0x1FFF的宽高了!")
-	// time.Sleep(time.Second * 10)
 }
 
 /*
-   在程序的最后，有一行代码time.Sleep(time.Second * 10)，它的作用是让程序暂停10秒钟，
-   以确保所有的goroutine都有足够的时间来完成它们的执行。如果程序立即退出，一些goroutine可
-   能没有足够的时间来完成它们的执行，输出可能不完整。
+	每一个爆破的goroutine添加一个time.Sleep(time.Second * 10)，这样能够让爆破出来了就退出了，而不是爆破出来后
+	由于没有Sleep所以导致该goroutine没有运行保存图像的位置就去到下一个代码执行goroutine，所以没有正常保存图像并且退出
 
-   因为有延迟函数，所以使用retun返回，而不是使用os.Exit(-1)，os.Exit(0)没问题，只要是非0的都会导致延迟函数不执行
+    在程序的最后，有一行代码time.Sleep(time.Second * 10)，它的作用是让程序暂停10秒钟，
+  	以确保所有的goroutine都有足够的时间来完成它们的执行。如果程序立即退出，一些goroutine可
+  	能没有足够的时间来完成它们的执行，输出可能不完整。
+
+    因为有延迟函数，所以使用retun返回，而不是使用os.Exit(-1)，os.Exit(0)没问题，只要是非0的都会导致延迟函数不执行
 */
