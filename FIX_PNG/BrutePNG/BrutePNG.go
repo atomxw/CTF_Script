@@ -153,11 +153,11 @@ func main() {
 	start = time.Now()
 	// 并行化爆破高度
 	fmt.Println("[-] 爆破高度中...")
-	crack_width(data, height, targetCRC)
+	crack_height(data, height, targetCRC)
 	
 	// 并行化爆破宽度
 	fmt.Println("[-] 爆破宽度中...")
-	crack_height(data, width, targetCRC)
+	crack_width(data, width, targetCRC)
 
 	// 并行化爆破高度和宽度
 	fmt.Println("[-] 爆破宽度和高度中...")
