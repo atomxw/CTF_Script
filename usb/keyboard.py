@@ -18,6 +18,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", type=str, default=None, required=True,
                     help="输入同级目录下的名称")
+parser.add_argument("-new", nargs='?', const=True, default=False,
+                    help="提取其他字节进行键盘提取")
 args  = parser.parse_args()
 
 FILE_PATH = os.path.abspath(args.f)
@@ -64,24 +66,27 @@ if FILE_PATH.endswith(".txt"):
 else:
     data = tools.get_data(FILE_PATH)
 
-def get_info(original=False):
+def get_info():  # sourcery skip: merge-duplicate-blocks
     output = []
     for line in data:
         if len(line) != 16:
             continue
-        
-        if line[4:6] == "00" :
+
+        if args.new:
+            if line[4:6] != "00":
+                continue
+        elif line[4:6] == "00":
             continue
 
-        if not original and line[4:6] == "2a":
-            output = output[:-1]
-            continue
-
-        if line[4:6] in normalKeys:
+        if args.new:
+            if line[6:8] in normalKeys:
+                output.append(shiftKeys[line[6:8]] if (int(line[:2], 16) >> 1 & 1 == 1) or (int(line[:2], 16) >> 6 & 1 == 1) else normalKeys[line[6:8]])
+        elif line[4:6] in normalKeys:
             output.append(shiftKeys[line[4:6]] if (int(line[:2], 16) >> 1 & 1 == 1) or (int(line[:2], 16) >> 6 & 1 == 1) else normalKeys[line[4:6]])
+
     return output
 
-data = get_info(True)
+data = get_info()
 print(f"原始数据: {''.join(data)}")
 
 flag = []
