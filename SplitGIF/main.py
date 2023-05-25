@@ -13,7 +13,7 @@ args  = parser.parse_args()
 
 if __name__ == '__main__':
     gifPath = os.path.abspath(args.f)
-    filePrefix, fileName, saveDir = PathCore.get_save_info(gifPath)
+    _, _, saveDir = PathCore.get_save_info(gifPath)
     PathCore.clear_and_create_dir(saveDir)
 
     gif = cv2.VideoCapture(gifPath)
@@ -27,7 +27,7 @@ if __name__ == '__main__':
             else:
                 print("获取某一帧图像出现错误!")
                 break
-
-        gif.release() # 释放资源
-        print("Split GIF Successful!")
+            
+    gif.release() # 释放资源
+    print("Split GIF Successful!")
     time.sleep(0.5)
