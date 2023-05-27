@@ -14,7 +14,7 @@ help='输入文件名称')
 parser.add_argument('-d', type=str, default=None, required=True,
 help='输入字典的文件名称')
 parser.add_argument('-p', type=int, default=cpu_count(),
-help='进程数')
+help='线程数')
 args = parser.parse_args()
 
 
