@@ -20,9 +20,7 @@ if __name__ == '__main__':
         exit(-1)
 
     with open(xmlPath, "rb") as f:
-        html = f.read()
-
-    root = etree.HTML(html)
+        root = etree.HTML(f.read())
     starts = root.xpath("//variable[starts-with(name, 'struct MPEG_FRAME mf')]/start/text()")
 
     bin_str = ""
@@ -34,5 +32,5 @@ if __name__ == '__main__':
             bin_str += f"{mf}"
 
     # print(bin_str)
-    print(''.join(chr(int(bin_str[i:i+8], 2)) for i in range(0, len(bin_str), 8)))
+    print(bytes((int(bin_str[i:i+8], 2)) for i in range(0, len(bin_str), 8)))
     
