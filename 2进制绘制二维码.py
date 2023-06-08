@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
         if size > 1:
             save_img = cv2.resize(save_img, None, fx=size, fy=size, interpolation=cv2.INTER_AREA)
-            save_invert_img = cv2.resize(invert_img, None, fx=size, fy=size, interpolation=cv2.INTER_AREA)
+            save_invert_img = cv2.resize(save_invert_img, None, fx=size, fy=size, interpolation=cv2.INTER_AREA)
         
         cv2.imwrite(f"./{saveDir}/{col}_{row}.png", save_img)
         cv2.imwrite(f"./{saveDir}/{col}_{row}_inverse.png", save_invert_img)
