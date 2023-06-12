@@ -1,6 +1,7 @@
 #!/usr/bin/env python4
 # Module for processing images, audios and the least significant bits.
 
+import os
 import numpy
 from PIL import Image
 from . import crypt2
@@ -10,6 +11,7 @@ MAGIC_NUMBER = b'stegv3'
 class HostElement:
     """ This class holds information about a host element. """
     def __init__(self, filename):
+        self.fileDir = os.path.dirname(filename)
         self.filename = filename
         self.format = filename[-3:]
         self.header, self.data = self.get_file(filename)
@@ -35,10 +37,10 @@ class HostElement:
         else:
             return bytes(msg[start:end]).decode('utf-8')
 
-        with open(filename, 'wb') as f:
+        with open(os.path.join(self.fileDir, filename), 'wb') as f:
             f.write(bytes(msg[start:end]))
 
-        print(f'File {filename} succesfully extracted from {self.filename}')
+        return f'File {filename} succesfully extracted from {self.filename}'
     
 
     def get_file(self, filename):
