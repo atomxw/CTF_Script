@@ -68,11 +68,9 @@ def dearnold(img, n, a, b, r, c, copy=True):
             img = np.copy(new_img)
     return new_img
 
-def saveImage(new_img, new_img_copy, n, a, b):
-    savaPath = os.path.join(saveDir, f"{file_name}_n{n}_a{a}_b{b}.png")
+def saveImage(new_img, savePath):
+    savaPath = os.path.join(saveDir, savePath)
     ImageCore.save_img(savaPath, new_img, ext=".png")
-    savaPath = os.path.join(saveDir, f"{file_name}_n{n}_a{a}_b{b}_copy.png")
-    ImageCore.save_img(savaPath, new_img_copy, ext=".png")
         
 def start(img_path, n, a, b):
     img = ImageCore.read_img(img_path, cv2.IMREAD_UNCHANGED)
@@ -81,12 +79,20 @@ def start(img_path, n, a, b):
     img_copy = img.copy()
     if args.t == "encode":
         new_img = arnold(img_copy, n, a, b, r, c, copy=False)
-        new_img_copy = arnold(img_copy, n, a, b, r, c)
+        if n != 1:
+            new_img_copy = arnold(img_copy, n, a, b, r, c)
     elif args.t == "decode":
         new_img = dearnold(img_copy, n, a, b, r, c, copy=False)
-        new_img_copy = dearnold(img_copy, n, a, b, r, c)
+        if n != 1:
+            new_img_copy = dearnold(img_copy, n, a, b, r, c)
 
-    saveImage(new_img, new_img_copy, n, a, b)
+    savePath = f"{file_name}_n{n}_a{a}_b{b}.png"
+    saveImage(new_img, savePath)
+    
+    if n != 1:
+        saveCopyPath = f"{file_name}_n{n}_a{a}_b{b}_copy.png"
+        saveImage(new_img_copy, saveCopyPath)
+
 
 def bruteForce(img_path):
     if n := input("请输入n的范围 (如:1-10, 回车默认为1): "):
