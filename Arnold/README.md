@@ -21,6 +21,7 @@ optional arguments:
 
 ```
 $ python .\main.py -f .\demo\catcat_7_100_100.png -t decode -n 7 -a 100 -b 100
+$ python .\main.py -f .\demo\encode_1_31_13.png -t decode -n 1 -a 31 -b 13
 $ python .\main.py -f .\demo\girlfriend_0x61_0x726e_0x6f6c64.png -t decode -n 0x61 -a 0x726e -b 0x6f6c64
 $ python .\main.py -f .\demo\sictf2023_2_1_2.bmp -t decode -n 2 -a 1 -b 2
 ```
