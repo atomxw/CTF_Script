@@ -8,8 +8,8 @@ parser.add_argument('-f', type=str, default=None, required=True,
                     help='输入MP3音频 (音频同目录需要有010editor导出的Xml文件!)')
 parser.add_argument("-hex", nargs='?', const=True, default=False,
                     help="使用hex编码输出")
-parser.add_argument("-v", nargs='?', const=True, default=False,
-                    help="使用hex编码输出")
+parser.add_argument("-bin", nargs='?', const=True, default=False,
+                    help="使用bin编码输出")
 args  = parser.parse_args()
 
 def getInfo():
