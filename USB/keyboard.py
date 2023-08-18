@@ -71,7 +71,11 @@ def get_info():
         if len(line) != 16:
             continue
 
-        if (args.new and line[4:6] != "00") or (not args.new and line[4:6] == "00"):
+        if args.new:
+            if line[4:6] != "00":
+                continue
+        elif line[0] != '0' or line[1] not in ['0', '2'] or line[2] != '0' or line[3] != '0' or line[6] != '0' or line[7] != '0' or line[8] != '0' or line[9] != '0' or line[10] != '0' or line[11] != '0' or line[12] != '0' or line[13] != '0' or line[14] != '0' or line[15] != '0' or line[4:6] == "00":
+            # from https://github.com/FzWjScJ/knm
             continue
         
         shiftNum = int(line[:2], 16)
