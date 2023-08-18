@@ -12,6 +12,16 @@ parser.add_argument("-v", nargs='?', const=True, default=False,
                     help="使用hex编码输出")
 args  = parser.parse_args()
 
+def getInfo():
+    with open(filePath, "rb") as f:
+        for start in starts:
+            f.seek(int(str(start)[:-1], 16), 0)
+            data = f.read(4)
+            yield [
+                f"{data[i] >> n & 1}"
+                for i, n in [[-2, 0], [-1, 3], [-1, 2]]
+            ]
+
 if __name__ == '__main__':
     filePath = os.path.abspath(args.f)
     baseDir = os.path.dirname(filePath)
@@ -27,14 +37,24 @@ if __name__ == '__main__':
         root = etree.HTML(f.read())
     starts = root.xpath("//variable[starts-with(name, 'struct MPEG_FRAME mf')]/start/text()")
 
-    bin_str = ""
-    with open(filePath, "rb") as f:
-        for start in starts:
-            f.seek(int(str(start)[:-1], 16), 0)
-            bin_str += f"{f.read(3)[-1] & 1}"
+    res = {
+        "private_bit": "",
+        "copyright": "",
+        "original": ""
+    }
+
+    for i in getInfo():
+        res["private_bit"] += i[0]
+        res["copyright"] += i[1]
+        res["original"] += i[2]
 
     if args.v:
-        print(f"bits: {bin_str}")
-    data = bytes((int(bin_str[i:i+8], 2)) for i in range(0, len(bin_str), 8))
-    print(data.hex()) if args.hex else print(data)
+        for key, value in res.items():
+            print(f"{key} bits:\n{value}")
+        print("")
+
+    for key, value in res.items():
+        data = bytes((int(value[i:i+8], 2)) for i in range(0, len(value), 8))
+        print(f"{key}:")
+        print(data.hex()) if args.hex else print(data)
     
