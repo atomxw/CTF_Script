@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", type=str, default=None, required=True,
                     help="输入同级目录下的名称")
-parser.add_argument("-new", nargs='?', const=True, default=False,
-                    help="提取另一部分字节进行绘图")
+parser.add_argument("-show", type=int, default=None, required=False,
+                    help="1.LEFT, 2.RIGHT, 3.ALL, 4.MOVE_LEFT, 5.MOVE_RIGHT, 6.MOVE_ALL")
 args  = parser.parse_args()
 
 TITLE = ["LEFT", "RIGHT", "ALL", "MOVE_LEFT", "MOVE_RIGHT", "MOVE_ALL"]
@@ -23,15 +23,14 @@ def read_file():
         data = tools.get_data(FILE_PATH)
     return data
 
-def get_pos():
-    data = read_file()
-
+def get_pos(mode):
     posx, posy = 0, 0
     pos_left, pos_right, pos_all = [], [], []
     for line in data:
-        if args.new and len(line) != 12 or not args.new and len(line) != 8:
-            continue
-        elif args.new:
+
+        if mode:
+            if len(line) <= 8:
+                continue
             x, y = int(line[4:6], 16), int(line[8:10], 16)
         else:
             x, y = int(line[2:4], 16), int(line[5:7], 16)
@@ -54,10 +53,10 @@ def get_pos():
 
 def plot_point(arr, axes, move=False):
     if arr.size != 0:
-        axes.plot(arr[:, 0], arr[:, 1]) if move else axes.scatter(arr[:, 0], arr[:, 1], s=10, marker="x")
+        axes.plot(arr[:, 0], arr[:, 1], c='purple') if move else axes.scatter(arr[:, 0], arr[:, 1], s=10, c='purple', marker="x")
 
-if __name__ == '__main__':
-    all_pos = get_pos()
+def printInfo(mode, info):
+    all_pos = get_pos(mode)
 
     _, axes = plt.subplots(2, 3, figsize=(15, 8))
     for i in range(len(axes)):
@@ -70,7 +69,33 @@ if __name__ == '__main__':
             else:
                 plot_point(all_pos[count%3], ax, move=True)
 
-    print("Done.")
+    print(info)
     plt.tight_layout()
     plt.show()
     
+def showInfo(mode, info):
+    all_pos = get_pos(mode)
+    
+    if args.show in [1, 2, 3, 4, 5, 6]:
+        arr = all_pos[args.show%3-1]
+        if arr.size == 0:
+            return
+        
+        if args.show < 3 :
+            plt.scatter(arr[:, 0], arr[:, 1], s=10, c='purple', marker="x")
+        else:
+            plt.plot(arr[:, 0], arr[:, 1], c='purple')
+            
+    print(info)
+    plt.tight_layout()
+    plt.show()
+    
+if __name__ == '__main__':
+    data = read_file()
+    
+    if args.show:
+        showInfo(False, "模式1绘制完毕!")
+        showInfo(True, "模式2绘制完毕!")
+    else:
+        printInfo(False, "模式1绘制完毕!")
+        printInfo(True, "模式2绘制完毕!")
