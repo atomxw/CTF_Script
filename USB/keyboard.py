@@ -21,8 +21,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", type=str, default=None, required=True,
                     help="输入同级目录下的名称")
-parser.add_argument("-new", nargs='?', const=True, default=False,
-                    help="提取其他字节进行键盘提取")
+# parser.add_argument("-new", nargs='?', const=True, default=False,
+#                     help="提取其他字节进行键盘提取")
 args = parser.parse_args()
 
 normalKeys = {
@@ -64,14 +64,14 @@ shiftKeys = {
 def isShift(shiftNum):
     return shiftNum >> 1 & 1 == 1 or shiftNum >> 5 & 1
 
-def get_info():
+def get_info(mode):
     output = []
     capState = False
     for line in data:
         if len(line) != 16:
             continue
 
-        if args.new:
+        if mode:
             if line[4:6] != "00":
                 continue
         elif line[0] != '0' or line[1] not in ['0', '2'] or line[2] != '0' or line[3] != '0' or line[6] != '0' or line[7] != '0' or line[8] != '0' or line[9] != '0' or line[10] != '0' or line[11] != '0' or line[12] != '0' or line[13] != '0' or line[14] != '0' or line[15] != '0' or line[4:6] == "00":
@@ -79,7 +79,7 @@ def get_info():
             continue
         
         shiftNum = int(line[:2], 16)
-        button = line[6:8] if args.new else line[4:6]
+        button = line[6:8] if mode else line[4:6]
         
         if not normalKeys.get(button):
             continue
@@ -121,10 +121,15 @@ if __name__ == '__main__':
             data = f.read().splitlines()
     else:
         data = tools.get_data(filePath)
-        
-    data = get_info()
-    print(f"原始数据: {''.join(data)}")
 
-    data = convertSpecialChars(data)
-    print(f"正常数据: {''.join(data)}")
+    print("\n模式1:")
+    info = get_info(False)
+    print(f"\t原始数据: {''.join(info)}")
+    print(f"\t正常数据: {''.join(convertSpecialChars(info))}")
+    
+    print("\n模式2:")
+    info = get_info(True)
+    print(f"\t原始数据: {''.join(info)}")
+    print(f"\t正常数据: {''.join(convertSpecialChars(info))}")
+
     os.system("pause")
