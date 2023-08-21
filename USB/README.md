@@ -4,51 +4,69 @@
 
 1. 首先你需要有安装wireshark（因为需要用到tshark提取流量内容）。
 2. 当你参数传入的是流量包时候，尽量保证流量包名称没有空格和特殊符号等，避免出现找不到流量包的情况。
-3. 鼠标流量的 `-new` 参数为可选参数，因为版本问题导致流量的x和y轴位置相反，所以当你在尝试的时候发现绘制的图片不对劲，就要试试带上 `-new` 参数了。
 
 <br>
 
 # Usage
 
-**键盘流量：**
+## 键盘流量：
 
 ```
-Usage: python .\keyboard.py -f <xxx.pcap/xxx.pcapng/xxx.txt>
-    example:
-        python .\keyboard.py -f .\流量\[UNCTF2022]CatchJerry.pcapng
-	    
-        python .\mouse.py -f .\demo\[UNCTF2022]CatchJerry.txt
+usage: keyboard.py [-h] -f F
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -f F        输入同级目录下的名称
 ```
 
-<br>
-
-**鼠标流量：**
+## 鼠标流量：
 
 ```
-Usage: python .\mouse.py -f <xxx.pcap/xxx.pcapng/xxx.txt> [-new]
-    example:
-        python .\mouse.py -f .\流量\[UNCTF2022]CatchJerry.pcapng
-        python .\mouse.py -f .\流量\2017陕西网络空间安全技术大赛Misc轨迹.pcap -new
-        
-        python .\mouse.py -f .\demo\[UNCTF2022]CatchJerry.txt
-        python .\mouse.py -f .\demo\[GFCTF2021]双击开始冒险.txt -new
+usage: mouse.py [-h] -f F [-show SHOW]
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -f F        输入同级目录下的名称
+  -show SHOW  单独显示某个(1.LEFT/MOVE_LEFT, 2.RIGHT/MOVE_RIGHT, 3.ALL/MOVE_ALL)
 ```
 
 <br>
 
 # 效果
 
-**键盘流量：**
+## 键盘流量：
 
-<img src="./images/image3.png">
+```
+$ python .\keyboard.py -f .\demo\流量\uuusb.pcapng
+```
+
+![image-20230821214951059](images/image-20230821214951059.png)
 
 <br>
 
-**鼠标流量：**
+## 鼠标流量：
 
-<img src="./images/image1.png">
+### 1.正常模式
 
-<img src="./images/image2.png">
+每个轨迹都绘制（共6张）
 
+![image-20230821215523497](images/image-20230821215523497.png)
 
+### 2.show参数
+
+单独展示某一个轨迹
+
+![image-20230821215329132](images/image-20230821215329132.png)
+
+```
+$ python .\mouse.py -f .\demo\流量\2017陕西网络空间安全技术大赛Misc轨迹.pcap -show 1
+```
+
+![image-20230821215305248](images/image-20230821215305248.png)
+
+### 3.优点
+
+自动跳过没有轨迹的模式！
+
+![image-20230821215639284](images/image-20230821215639284.png)
 
