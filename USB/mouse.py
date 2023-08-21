@@ -85,6 +85,7 @@ def showInfo(mode, btn_mode, info):
             print("当前模式为空, 已经自动帮您跳过!")
             return
         
+        _ = plt.figure(figsize=(15, 8))
         if args.show < 3 :
             plt.scatter(arr[:, 0], arr[:, 1], s=10, c='purple', marker="x")
         else:
