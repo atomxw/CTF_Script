@@ -21,8 +21,6 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", type=str, default=None, required=True,
                     help="输入同级目录下的名称")
-# parser.add_argument("-new", nargs='?', const=True, default=False,
-#                     help="提取其他字节进行键盘提取")
 args = parser.parse_args()
 
 normalKeys = {
@@ -119,6 +117,7 @@ if __name__ == '__main__':
     if filePath.endswith(".txt"):
         with open(filePath, "r") as f:
             data = f.read().splitlines()
+        print("[+] 读取文本成功, 执行USB流量分析...")
     else:
         data = tools.get_data(filePath)
 

@@ -26,7 +26,7 @@ def get_select(file_path):
 
     if lengths[0] == 0 and lengths[1] == 0:
         print(f"[-]: usb.size: {size}(MB), usb.capdata: {lengths[0]}, usbhid.data: {lengths[1]}, 默认读取: {filters[0]}")
-        print("请检查您的流量名是否有空格或符号, 请您检查传入文本内容为空!")
+        print("请检查您的流量名是否有空格或符号, 如果有请删除并重新命名!")
         exit(-1)
     elif lengths[0] >= lengths[1]:
         print(f"[-]: usb.size: {size}(MB), usb.capdata: {lengths[0]}, usbhid.data: {lengths[1]}, 默认读取: {filters[0]}")
