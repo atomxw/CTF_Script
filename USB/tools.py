@@ -2,7 +2,6 @@ import os
 import subprocess
 
 
-maximum = 0.8 # 流量小于0.8MB才会自动读取流量大小
 filters = ["usb.capdata", "usbhid.data"]
 CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
 
@@ -24,8 +23,12 @@ def get_length(file_path, filter):
 def get_select(file_path):
     size = round(os.path.getsize(file_path) / (1024 * 1024), 2)
     lengths = [get_length(file_path, filter) for filter in filters]
-    
-    if lengths[0] >= lengths[1]:
+
+    if lengths[0] == 0 and lengths[1] == 0:
+        print(f"[-]: usb.size: {size}(MB), usb.capdata: {lengths[0]}, usbhid.data: {lengths[1]}, 默认读取: {filters[0]}")
+        print("请检查您的流量名是否有空格或符号, 请您检查传入文本内容为空!")
+        exit(-1)
+    elif lengths[0] >= lengths[1]:
         print(f"[-]: usb.size: {size}(MB), usb.capdata: {lengths[0]}, usbhid.data: {lengths[1]}, 默认读取: {filters[0]}")
         select = 1
     else:
