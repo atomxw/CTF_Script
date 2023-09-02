@@ -62,29 +62,33 @@ shiftKeys = {
 def isShift(shiftNum):
     return shiftNum >> 1 & 1 == 1 or shiftNum >> 5 & 1
 
-def get_info(mode):
+def get_info(mode):  # sourcery skip: low-code-quality
     output = []
     capState = False
     for line in data:
-        if len(line) != 16:
+        if mode in [1, 2] and len(line) != 16:
+            continue
+        elif mode in [3] and len(line) != 74:
             continue
 
-        if mode:
-            if line[4:6] != "00":
-                continue
-        elif line[0] != '0' or line[1] not in ['0', '2'] or line[2] != '0' or line[3] != '0' or line[6] != '0' or line[7] != '0' or line[8] != '0' or line[9] != '0' or line[10] != '0' or line[11] != '0' or line[12] != '0' or line[13] != '0' or line[14] != '0' or line[15] != '0' or line[4:6] == "00":
-            # from https://github.com/FzWjScJ/knm
+        if mode == 1 and line[4:6] != "00":
             continue
-        
-        shiftNum = int(line[:2], 16)
-        button = line[6:8] if mode else line[4:6]
-        
+        elif mode == 2 and (line[4:6] == "00" or line[6:8] == "0a"):
+            # from https://github.com/FzWjScJ/knm
+            # if line[0] != '0' or line[1] not in ['0', '2'] or line[2] != '0' or line[3] != '0' or line[6] != '0' or line[7] != '0' or line[8] != '0' or line[9] != '0' or line[10] != '0' or line[11] != '0' or line[12] != '0' or line[13] != '0' or line[14] != '0' or line[15] != '0' or line[4:6] == "00":
+            continue
+        elif mode == 3 and (line[6:8] == "00" or line[8:10] == "0a"):
+            continue
+
+        shiftNum = int(line[:2], 16) if mode in [1, 2] else int(line[2:4], 16)
+        button = line[6:8] if mode in [1, 3] else line[4:6]
+
         if not normalKeys.get(button):
             continue
-        
+
         if button == "39":
             capState = not capState
-        
+
         # capslock这个按键好像只对a-z开启大写
         if capState and shiftKeys[button] in string.ascii_letters:
             output.append(shiftKeys[button])
@@ -92,7 +96,7 @@ def get_info(mode):
             output.append(shiftKeys[button])
         else:
             output.append(normalKeys[button])
-            
+
     return output
 
 def convertSpecialChars(data):
@@ -104,7 +108,7 @@ def convertSpecialChars(data):
             flag.append("\t")
         elif i == "<RET>":
             flag.append("\n")
-        elif i == "<DEL>":
+        elif i in ["<DEL>", "<DELETE>"]:
             if flag != []:
                 flag.pop(-1)
         elif i != "<CAP>":
@@ -122,12 +126,17 @@ if __name__ == '__main__':
         data = tools.get_data(filePath)
 
     print("\n模式1:")
-    info = get_info(False)
+    info = get_info(1)
     print(f"\t原始数据: {''.join(info)}")
     print(f"\t正常数据: {''.join(convertSpecialChars(info))}")
     
     print("\n模式2:")
-    info = get_info(True)
+    info = get_info(2)
+    print(f"\t原始数据: {''.join(info)}")
+    print(f"\t正常数据: {''.join(convertSpecialChars(info))}")
+    
+    print("\n模式3:")
+    info = get_info(3)
     print(f"\t原始数据: {''.join(info)}")
     print(f"\t正常数据: {''.join(convertSpecialChars(info))}")
 
