@@ -28,9 +28,9 @@ def get_pos(mode, btn_mode):
     pos_left, pos_right, pos_all = [], [], []
     for line in data:
 
-        if mode and len(line) < 10 or not mode and len(line) != 8:
-            continue
-        elif mode:
+        if mode:
+            if len(line) <= 8:
+                continue
             x, y = int(line[4:6], 16), int(line[8:10], 16)
         else:
             x, y = int(line[2:4], 16), int(line[5:7], 16)
