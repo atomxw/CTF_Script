@@ -36,10 +36,10 @@ def repair(pos, answer, FileName=None):
             output += f"修复前: {RarBlockType[rarBlockType]}, 修复后: {RarBlockType[answer]}"
     else:
         if rarBlockType == answer:
-            output += f"文件名: {FileName.decode()}, {RarBlockType[answer]} 结构正确, "
+            output += f"文件名: {bytes(FileName)}, {RarBlockType[answer]} 结构正确, "
         else:
             data[pos] = answer
-            output += f"文件名: {FileName.decode()}, 修复前: {RarBlockType[rarBlockType]}, 修复后: {RarBlockType[answer]}, "
+            output += f"文件名: {bytes(FileName)}, 修复前: {RarBlockType[rarBlockType]}, 修复后: {RarBlockType[answer]}, "
         
         # 判断是否为伪加密
         if data[FileHeadFlags_Pos] >> 2 & 1:
@@ -75,6 +75,10 @@ if __name__ == '__main__':
             repair(RarBlockType_Pos, 123)
             break
 
+        # 处理reverse字段的存在
+        if not RarBlockType.get(data[RarBlockType_Pos]):
+            RarBlockType_Pos = RarBlockType_Pos - 5
+        
         # 获取文件大小
         RawDataSize_Pos = RarBlockType_Pos + 5
         File_RawDataSize = int.from_bytes(data[RawDataSize_Pos:RawDataSize_Pos+4], byteorder="little", signed=False)
