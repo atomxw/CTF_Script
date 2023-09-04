@@ -42,6 +42,7 @@ def repair(pos, answer, FileName=None):
             output += f"文件名: {bytes(FileName)}, 修复前: {RarBlockType[rarBlockType]}, 修复后: {RarBlockType[answer]}, "
         
         # 判断是否为伪加密
+        FileHeadFlags_Pos = pos + 1
         if data[FileHeadFlags_Pos] >> 2 & 1:
             data[FileHeadFlags_Pos] = data[FileHeadFlags_Pos] & 0b11111011
             output = f"{output}可能存在伪加密已经修复!"
