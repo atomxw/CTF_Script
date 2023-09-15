@@ -70,7 +70,9 @@ def get_info(mode):  # sourcery skip: low-code-quality
             continue
         elif mode in [3] and len(line) != 74:
             continue
-
+        elif mode in [4] and len(line) != 4:
+            continue
+        
         if mode == 1 and line[4:6] != "00":
             continue
         elif mode == 2 and (line[4:6] == "00" or line[6:8] == "0a"):
@@ -79,9 +81,16 @@ def get_info(mode):  # sourcery skip: low-code-quality
             continue
         elif mode == 3 and (line[6:8] == "00" or line[8:10] == "0a"):
             continue
-
-        shiftNum = int(line[:2], 16) if mode in [1, 2] else int(line[2:4], 16)
-        button = line[6:8] if mode in [1, 3] else line[4:6]
+        elif mode == 4 and line[2:3] == "00":
+            continue
+        
+        shiftNum = int(line[:2], 16) if mode in [1, 2, 4] else int(line[2:4], 16)
+        if mode in [1, 3]:
+            button = line[6:8]
+        elif mode == 2:
+            button = line[4:6]
+        elif mode == 4:
+            button = line[2:4]
 
         if not normalKeys.get(button):
             continue
@@ -137,6 +146,11 @@ if __name__ == '__main__':
     
     print("\n模式3:")
     info = get_info(3)
+    print(f"\t原始数据: {''.join(info)}")
+    print(f"\t正常数据: {''.join(convertSpecialChars(info))}")
+
+    print("\n模式4:")
+    info = get_info(4)
     print(f"\t原始数据: {''.join(info)}")
     print(f"\t正常数据: {''.join(convertSpecialChars(info))}")
 
