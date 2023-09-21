@@ -75,7 +75,7 @@ def get_info(mode):  # sourcery skip: low-code-quality
         
         if mode == 1 and line[4:6] != "00":
             continue
-        elif mode == 2 and (line[4:6] == "00" or line[6:8] == "0a"):
+        elif mode == 2 and (line[4:6] == "00" or line[6:8] == "0a" or line[6:8] != "00"):
             # from https://github.com/FzWjScJ/knm
             # if line[0] != '0' or line[1] not in ['0', '2'] or line[2] != '0' or line[3] != '0' or line[6] != '0' or line[7] != '0' or line[8] != '0' or line[9] != '0' or line[10] != '0' or line[11] != '0' or line[12] != '0' or line[13] != '0' or line[14] != '0' or line[15] != '0' or line[4:6] == "00":
             continue
@@ -92,6 +92,9 @@ def get_info(mode):  # sourcery skip: low-code-quality
         elif mode == 4:
             button = line[2:4]
 
+        # if button == "27":
+        #     print(line)
+        
         if not normalKeys.get(button):
             continue
 
