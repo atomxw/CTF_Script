@@ -1,81 +1,111 @@
 import os
-import time
 import argparse
-import zwsp_steg
-import webbrowser
-from rich.table import Table
-from rich.console import Console
+from py_mini_racer import MiniRacer
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-f', type=str, default=None, required=True,
-                    help='输入文件名称')
-args = parser.parse_args()
+def icon():
+    print(r"""
+   ___                 ___  ___ _        ____                  _      ___    ____  __      ______          __  
+  / _ )__ ____ __ ___ |_  |/ _ ( )___   /_  / ___ _______  ___| | /| / (_)__/ / /_/ /  ___/_  __/__  ___  / /__
+ / _  / // /\ \ /(_-</ __// // //(_-<    / /_/ -_) __/ _ \/___/ |/ |/ / / _  / __/ _ \/___// / / _ \/ _ \/ (_-<
+/____/\_, //_\_\/___/____/\___/ /___/   /___/\__/_/  \___/    |__/|__/_/\_,_/\__/_//_/    /_/  \___/\___/_/___/
+     /___/                                                                                                               
+""")
 
-console = Console()
-base_dir = os.path.dirname(os.path.abspath(__file__))
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", type=str, default=None, required=True,
+                        help="输入零宽文件")
+    return parser.parse_args()
 
+class UnicodeSteganography:
+    
+    AllChars = {'\u200a', '\u200b', '\u200c', '\u200d', '\u200e', '\u200f', '\u202a', '\u202c', '\u202d', '\u2062', '\u2063', '\ufeff'}
+    
+    def __init__(self, jsCode) -> None:
+        self.crx = MiniRacer() # _get_lib_path 我修改了这个的dll的路径 py_mini_racer.py
+        self.crx.eval(jsCode)
 
-# 1.read data
-with open(args.f, "r", encoding="utf-8") as f:
-    data = f.read()
+    def getUseChars(self, cipher_text) -> str:
+        return ''.join(sorted(set(cipher_text) & self.AllChars))
 
-url_dict = [
-    ["1", "https://www.mzy0.com/ctftools/zerowidth1/", "src/www.mzy0.com/Unicode.html"],
-    ["2", "https://www.mzy0.com/ctftools/zerowidth2/", "src/www.mzy0.com/Offdev.net.html"],
-    ["3", "https://330k.github.io/misc_tools/unicode_steganography.html", "src/misc_tools-gh-pages/unicode_steganography.html"],
-    ["4", "https://yuanfux.github.io/zero-width-web/", "src/zero-width-web-master/docs/index.html"],
-    ["5", "http://www.atoolbox.net/Tool.php?Id=829", "src/一个工具箱/隐藏字符加密.html"]
-]
+    def __setChars(self, cipher_text):
+        cipher_text = cipher_text
+        self.crx.call("unicodeSteganographer.setUseChars", self.getUseChars(cipher_text))
 
-def show_table():
-    table = Table(show_header=True, header_style="bold blue")
-    table.add_column("WebSite", style="dim", width=8)
-    table.add_column("Link")
-    for i, info in enumerate(url_dict):
-        if i == 0:
-            table.add_row(info[0], f"[bold red]{info[1]}[/]")
-        else:
-            table.add_row(*info[:2])
-    console.print(table)
+    def decodeText(self, cipher_text) -> str:
+        self.__setChars(cipher_text)
+        return self.crx.call("unicodeSteganographer.decodeText", cipher_text)['hiddenText']
+    
+    def decodeBinary(self, cipher_text) -> bytes:
+        self.__setChars(cipher_text)
+        return bytes(self.crx.call("unicodeSteganographer.decodeBinary", cipher_text)['hiddenData'].values())
 
-def offline_site(choice):
-    url_path = os.path.join(base_dir, url_dict[int(choice)-1][2])
-    os.system(url_path)
+class ZeroWidthLib:
 
-def open_website(choice, online):
-    webbrowser.open(url_dict[int(choice)-1][1], new=0, autoraise=True) if online else offline_site(choice)
+    def __init__(self, jsCode) -> None:
+        self.crx = MiniRacer() # _get_lib_path 我修改了这个的dll的路径 py_mini_racer.py
+        self.crx.eval(jsCode)
 
-def select_website(from_except=False):
-    os.system("cls")
-    show_table()
-    while True:
-        if from_except:
-            choice = console.input(f"[bold blue][+] 无法正常解开, 请选择您想要的使用的网站? (1~{len(url_dict)+1}, 回车则使用默认网站): [/]")
-        else:
-            choice = console.input(f"[bold blue][+] 选择您想要的使用的网站? (1~{len(url_dict)+1}, 回车则使用默认网站): [/]")
+    def decode(self, cipher_text) -> str:
+        return self.crx.call("zero_width_lib.decode", cipher_text)
 
-        if choice == "":
-            choice = "1"
-            break
-        elif choice in [str(i) for i in range(1, len(url_dict) + 1)]:
-            break
-        else:
-            console.print("[-] 输入错误, 请重新输入!", style="bold blue")
+class ZwspStegJs:
+    
+    def __init__(self, jsCode) -> None:
+        self.crx = MiniRacer() # _get_lib_path 我修改了这个的dll的路径 py_mini_racer.py
+        self.crx.eval(jsCode)
 
-    online = console.input("[bold blue][+] 是否在线访问网站? [/]([bold green]y[/]/[bold red]N[/]): ") in ["y", "Y"]
-    open_website(choice, online)
+    def decode_MODE_ZWSP(self, cipher_text) -> str:
+        return self.crx.call("zwsp_steg_js.decode", cipher_text, 0)
+    
+    def decode_MODE_FULL(self, cipher_text) -> str:
+        return self.crx.call("zwsp_steg_js.decode", cipher_text, 1)
 
-if __name__ == "__main__":
-    try:
-        console.print("[-] 已经为您解开, 结果如下: ", style="bold blue")
-        console.print(zwsp_steg.decode(data), style="bold red")
-        if console.input("[bold blue][+] 是否需要网站呢? [/]([bold green]y[/]/[bold red]N[/]): ") in ["y", "Y"]:
-            select_website()
-        else:
-            console.print("[-] 欢迎下次使用!", style="bold blue")
-            time.sleep(0.5)
-    except TypeError:
-        select_website(from_except=True)
+def createJsObj():
+    with open(os.path.join(jsDir, "unicode_steganography.js"), "rb") as f:
+        unicodeSteganography = UnicodeSteganography(f.read())
+
+    with open(os.path.join(jsDir, "zero-width-lib.js"), "rb") as f:
+        zeroWidthLib = ZeroWidthLib(f.read())
         
-        
+    with open(os.path.join(jsDir, "zwsp-steg-js.js"), "rb") as f:
+        zxwspStegJs = ZwspStegJs(f.read())
+    return unicodeSteganography, zeroWidthLib, zxwspStegJs
+
+def try_decode(decode_func, cipher):
+  try:
+    return decode_func(cipher)
+  except Exception as _:
+    return "不存在该零宽!"
+
+if __name__ == '__main__':
+    args = parse_arguments()
+    baseDir = os.path.dirname(os.path.abspath(__file__))
+    jsDir = os.path.join(baseDir, "js")
+    filePath = os.path.abspath(args.f)
+    with open(filePath, "r", encoding="utf-8") as f:
+        cipher_text = f.read()
+    
+    unicodeSteganography, zeroWidthLib, zxwspStegJs = createJsObj()
+    
+    libs = {
+        "UnicodeSteg": unicodeSteganography.decodeText,
+        "UnicodeStegBinary": unicodeSteganography.decodeBinary,
+        "ZeroWidthLib": zeroWidthLib.decode,
+        "ZxwspStegJs_ZWSP": zxwspStegJs.decode_MODE_ZWSP,
+        "ZxwspStegJs_FULL": zxwspStegJs.decode_MODE_FULL
+    }
+    
+    icon()
+    print("[1] UnicodeSteganography:")
+    print(f"\tText: {try_decode(libs['UnicodeSteg'], cipher_text)}")
+    print(f"\tBinary: {try_decode(libs['UnicodeStegBinary'], cipher_text)}")
+    
+    print("\n[2] Zero-Width-Lib:")
+    print(f"\tText: {try_decode(libs['ZeroWidthLib'], cipher_text)}")
+
+    print("\n[3] Zwsp-Steg-Js:")
+    print(f"\tText1: {try_decode(libs['ZxwspStegJs_ZWSP'], cipher_text)}")
+    print(f"\tText2: {try_decode(libs['ZxwspStegJs_FULL'], cipher_text)}")
+    os.system("pause")
