@@ -1,5 +1,4 @@
 import os
-import re
 import argparse
 
 
@@ -14,5 +13,7 @@ if __name__ == '__main__':
     with open(file_path, "r", encoding='utf-8') as f:
         data = f.read()
 
-    print(set(re.findall('[^a-zA-Z0-9,<.>/?;:\'\"\[\]{}\\\|`~!@#$%^&*()_\-+= \t\n\r\f\v，《。》？；：’‘”“【】、·！—\u4e00-\u9fa5]', data)))
+    AllChars = {'\u200a', '\u200b', '\u200c', '\u200d', '\u200e', '\u200f', '\u202a', '\u202c', '\u202d', '\u2062', '\u2063', '\ufeff'}
+    Chars = sorted(set(data) & AllChars)
+    print(Chars)
     os.system('pause')
