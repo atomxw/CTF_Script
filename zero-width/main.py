@@ -33,13 +33,15 @@ class UnicodeSteganography:
         cipher_text = cipher_text
         self.crx.call("unicodeSteganographer.setUseChars", self.getUseChars(cipher_text))
 
-    def decodeText(self, cipher_text) -> str:
+    def decodeText(self, cipher_text) -> dict:
         self.__setChars(cipher_text)
-        return self.crx.call("unicodeSteganographer.decodeText", cipher_text)['hiddenText']
+        return self.crx.call("unicodeSteganographer.decodeText", cipher_text)
     
-    def decodeBinary(self, cipher_text) -> bytes:
+    def decodeBinary(self, cipher_text) -> dict:
         self.__setChars(cipher_text)
-        return bytes(self.crx.call("unicodeSteganographer.decodeBinary", cipher_text)['hiddenData'].values())
+        decodeDic = self.crx.call("unicodeSteganographer.decodeBinary", cipher_text)
+        decodeDic['hiddenData'] = bytes(decodeDic['hiddenData'].values())
+        return decodeDic
 
 class ZeroWidthLib:
 
@@ -99,8 +101,8 @@ if __name__ == '__main__':
     
     icon()
     print("[1] UnicodeSteganography:")
-    print(f"\tText: {try_decode(libs['UnicodeSteg'], cipher_text)}")
-    print(f"\tBinary: {try_decode(libs['UnicodeStegBinary'], cipher_text)}")
+    print(f"\tText: {try_decode(libs['UnicodeSteg'], cipher_text)['hiddenText']}")
+    print(f"\tBinary: {try_decode(libs['UnicodeStegBinary'], cipher_text)['hiddenData']}")
     
     print("\n[2] Zero-Width-Lib:")
     print(f"\tText: {try_decode(libs['ZeroWidthLib'], cipher_text)}")
