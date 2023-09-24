@@ -18,13 +18,18 @@ def parse_arguments():
                         help="输入零宽文件")
     return parser.parse_args()
 
-class UnicodeSteganography:
-    
-    AllChars = {'\u200a', '\u200b', '\u200c', '\u200d', '\u200e', '\u200f', '\u202a', '\u202c', '\u202d', '\u2062', '\u2063', '\ufeff'}
+class JSRuntime:
     
     def __init__(self, jsCode) -> None:
         self.crx = MiniRacer() # _get_lib_path 我修改了这个的dll的路径 py_mini_racer.py
         self.crx.eval(jsCode)
+
+class UnicodeSteganography(JSRuntime):
+    
+    AllChars = {'\u200a', '\u200b', '\u200c', '\u200d', '\u200e', '\u200f', '\u202a', '\u202c', '\u202d', '\u2062', '\u2063', '\ufeff'}
+    
+    def __init__(self, jsCode) -> None:
+        super().__init__(jsCode)
 
     def getUseChars(self, cipher_text) -> str:
         return ''.join(sorted(set(cipher_text) & self.AllChars))
@@ -43,26 +48,32 @@ class UnicodeSteganography:
         decodeDic['hiddenData'] = bytes(decodeDic['hiddenData'].values())
         return decodeDic
 
-class ZeroWidthLib:
+class ZeroWidthLib(JSRuntime):
 
     def __init__(self, jsCode) -> None:
-        self.crx = MiniRacer() # _get_lib_path 我修改了这个的dll的路径 py_mini_racer.py
-        self.crx.eval(jsCode)
+        super().__init__(jsCode)
 
     def decode(self, cipher_text) -> str:
         return self.crx.call("zero_width_lib.decode", cipher_text)
 
-class ZwspStegJs:
-    
+class ZwspStegJs(JSRuntime):
+
     def __init__(self, jsCode) -> None:
-        self.crx = MiniRacer() # _get_lib_path 我修改了这个的dll的路径 py_mini_racer.py
-        self.crx.eval(jsCode)
+        super().__init__(jsCode)
 
     def decode_MODE_ZWSP(self, cipher_text) -> str:
         return self.crx.call("zwsp_steg_js.decode", cipher_text, 0)
     
     def decode_MODE_FULL(self, cipher_text) -> str:
         return self.crx.call("zwsp_steg_js.decode", cipher_text, 1)
+
+class TextBlindWatermark(JSRuntime):
+    
+    def __init__(self, jsCode) -> None:
+        super().__init__(jsCode)
+
+    def decode(self, cipher_text) -> str:
+        return self.crx.call("decode", cipher_text)
 
 def createJsObj():
     with open(os.path.join(jsDir, "unicode_steganography.js"), "rb") as f:
@@ -73,7 +84,10 @@ def createJsObj():
         
     with open(os.path.join(jsDir, "zwsp-steg-js.js"), "rb") as f:
         zxwspStegJs = ZwspStegJs(f.read())
-    return unicodeSteganography, zeroWidthLib, zxwspStegJs
+        
+    with open(os.path.join(jsDir, "text_blind_watermark.js"), "rb") as f:
+        text_blind_watermark = TextBlindWatermark(f.read())
+    return unicodeSteganography, zeroWidthLib, zxwspStegJs, text_blind_watermark
 
 def try_decode(decode_func, cipher):
   try:
@@ -89,14 +103,15 @@ if __name__ == '__main__':
     with open(filePath, "r", encoding="utf-8") as f:
         cipher_text = f.read()
     
-    unicodeSteganography, zeroWidthLib, zxwspStegJs = createJsObj()
+    unicodeSteganography, zeroWidthLib, zxwspStegJs, text_blind_watermark = createJsObj()
     
     libs = {
         "UnicodeSteg": unicodeSteganography.decodeText,
         "UnicodeStegBinary": unicodeSteganography.decodeBinary,
         "ZeroWidthLib": zeroWidthLib.decode,
         "ZxwspStegJs_ZWSP": zxwspStegJs.decode_MODE_ZWSP,
-        "ZxwspStegJs_FULL": zxwspStegJs.decode_MODE_FULL
+        "ZxwspStegJs_FULL": zxwspStegJs.decode_MODE_FULL,
+        "Decode_TextBlindWatermark": text_blind_watermark.decode,
     }
     
     icon()
@@ -110,4 +125,7 @@ if __name__ == '__main__':
     print("\n[3] Zwsp-Steg-Js:")
     print(f"\tText1: {try_decode(libs['ZxwspStegJs_ZWSP'], cipher_text)}")
     print(f"\tText2: {try_decode(libs['ZxwspStegJs_FULL'], cipher_text)}")
+    
+    print("\n[4] text_blind_watermark:")
+    print(f"\tText: {try_decode(libs['Decode_TextBlindWatermark'], cipher_text)}")
     os.system("pause")
