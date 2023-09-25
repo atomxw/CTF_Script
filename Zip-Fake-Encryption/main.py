@@ -84,3 +84,5 @@ if __name__ == '__main__':
             f.write(data)
     else:
         print("[+] 不存在加密, 无需保存文件!")
+    
+    os.system("pause")
