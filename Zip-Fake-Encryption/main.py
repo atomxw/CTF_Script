@@ -7,8 +7,8 @@ from rich.console import Console
 
 console = Console()
 table = Table(show_header=True, header_style="bold")
-table.add_column("节选HEX")
 table.add_column("文件名")
+table.add_column("节选HEX")
 table.add_column("可能使用的压缩工具")
 table.add_column("是否存在伪加密")
 
