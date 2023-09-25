@@ -1,5 +1,6 @@
 import os
 import re
+import time
 import argparse
 from rich.table import Table
 from rich.console import Console
@@ -85,4 +86,4 @@ if __name__ == '__main__':
     else:
         print("[+] 不存在加密, 无需保存文件!")
     
-    os.system("pause")
+    time.sleep(1)
