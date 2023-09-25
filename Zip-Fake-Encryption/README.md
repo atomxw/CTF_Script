@@ -28,4 +28,4 @@ pip3 install -r requirements.txt
 $ python .\main.py -f .\demo\2.SICTF2023_EzMisc_zipcenop会报错.zip
 ```
 
-![image-20230925190138655](images/image-20230925190138655.png)
+![image-20230925190349787](images/image-20230925190349787.png)
