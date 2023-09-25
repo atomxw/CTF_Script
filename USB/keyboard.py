@@ -83,6 +83,9 @@ def get_info(mode):  # sourcery skip: low-code-quality
             continue
         elif mode == 4 and line[2:3] == "00":
             continue
+        elif mode == 5 and line[6:8] == "00":
+            continue
+            
         
         shiftNum = int(line[:2], 16) if mode in [1, 2, 4] else int(line[2:4], 16)
         if mode in [1, 3]:
@@ -91,6 +94,8 @@ def get_info(mode):  # sourcery skip: low-code-quality
             button = line[4:6]
         elif mode == 4:
             button = line[2:4]
+        elif mode == 5:
+            button = line[6:8]
 
         # if button == "27":
         #     print(line)
@@ -154,6 +159,11 @@ if __name__ == '__main__':
 
     print("\n模式4:")
     info = get_info(4)
+    print(f"\t原始数据: {''.join(info)}")
+    print(f"\t正常数据: {''.join(convertSpecialChars(info))}")
+
+    print("\n模式5:")
+    info = get_info(5)
     print(f"\t原始数据: {''.join(info)}")
     print(f"\t正常数据: {''.join(convertSpecialChars(info))}")
 
