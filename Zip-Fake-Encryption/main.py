@@ -50,7 +50,6 @@ if __name__ == '__main__':
         findByte = b"\x50\x4b\x01\x02" + re.escape(VersionMadeBy.to_bytes(2, byteorder="little", signed=False))
         for iter in re.finditer(findByte, data):
             pos = iter.end() + 2
-            print(pos)
             FileNameLengthPos = pos + 20
             FileNameLength = int.from_bytes(data[FileNameLengthPos:FileNameLengthPos+2], byteorder="little", signed=False)
             FileNamePos = FileNameLengthPos + 18
