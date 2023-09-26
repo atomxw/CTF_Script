@@ -1,10 +1,13 @@
 import os
 import argparse
+from rich.console import Console
 from py_mini_racer import MiniRacer
 
 
+console = Console()
+
 def icon():
-    print(r"""
+    console.print(r"""
    ___                 ___  ___ _        ____                  _      ___    ____  __      ______          __  
   / _ )__ ____ __ ___ |_  |/ _ ( )___   /_  / ___ _______  ___| | /| / (_)__/ / /_/ /  ___/_  __/__  ___  / /__
  / _  / // /\ \ /(_-</ __// // //(_-<    / /_/ -_) __/ _ \/___/ |/ |/ / / _  / __/ _ \/___// / / _ \/ _ \/ (_-<
@@ -40,7 +43,9 @@ class UnicodeSteganography(JSRuntime):
 
     def decodeText(self, cipher_text) -> dict:
         self.__setChars(cipher_text)
-        return self.crx.call("unicodeSteganographer.decodeText", cipher_text)
+        res = self.crx.call("unicodeSteganographer.decodeText", cipher_text)
+        res['hiddenText'] = res['hiddenText'].replace('\x9d', '')
+        return res
     
     def decodeBinary(self, cipher_text) -> dict:
         self.__setChars(cipher_text)
@@ -74,7 +79,18 @@ class TextBlindWatermark(JSRuntime):
 
     def decode(self, cipher_text) -> str:
         return self.crx.call("decode", cipher_text)
+    
+class MorseEncrypt(JSRuntime):
+    
+    def __init__(self, jsCode) -> None:
+        super().__init__(jsCode)
+        
+    def decodeByMorse(self, cipher_text) -> str:
+        return self.crx.call("handleDecode", cipher_text)
 
+    def decodeByUnicode(self, cipher_text) -> str:
+        return self.crx.call("decodeByUnicode", cipher_text)
+    
 def createJsObj():
     with open(os.path.join(jsDir, "unicode_steganography.js"), "rb") as f:
         unicodeSteganography = UnicodeSteganography(f.read())
@@ -87,7 +103,10 @@ def createJsObj():
         
     with open(os.path.join(jsDir, "text_blind_watermark.js"), "rb") as f:
         text_blind_watermark = TextBlindWatermark(f.read())
-    return unicodeSteganography, zeroWidthLib, zxwspStegJs, text_blind_watermark
+    
+    with open(os.path.join(jsDir, "morse-encrypt.js"), "rb") as f:
+        morseEncrypt = MorseEncrypt(f.read())
+    return unicodeSteganography, zeroWidthLib, zxwspStegJs, text_blind_watermark, morseEncrypt
 
 def try_decode(decode_func, cipher):
   try:
@@ -103,7 +122,7 @@ if __name__ == '__main__':
     with open(filePath, "r", encoding="utf-8") as f:
         cipher_text = f.read()
     
-    unicodeSteganography, zeroWidthLib, zxwspStegJs, text_blind_watermark = createJsObj()
+    unicodeSteganography, zeroWidthLib, zxwspStegJs, text_blind_watermark, morseEncrypt = createJsObj()
     
     libs = {
         "UnicodeSteg": unicodeSteganography.decodeText,
@@ -112,20 +131,26 @@ if __name__ == '__main__':
         "ZxwspStegJs_ZWSP": zxwspStegJs.decode_MODE_ZWSP,
         "ZxwspStegJs_FULL": zxwspStegJs.decode_MODE_FULL,
         "Decode_TextBlindWatermark": text_blind_watermark.decode,
+        "MorseEncrypt_decodeByMorse": morseEncrypt.decodeByMorse,
+        "MorseEncrypt_decodeByUnicode": morseEncrypt.decodeByUnicode
     }
     
     icon()
-    print("[1] UnicodeSteganography:")
-    print(f"\tText: {try_decode(libs['UnicodeSteg'], cipher_text)['hiddenText']}")
-    print(f"\tBinary: {try_decode(libs['UnicodeStegBinary'], cipher_text)['hiddenData']}")
+    console.print("[1] UnicodeSteganography:")
+    console.print(f"\tText: {try_decode(libs['UnicodeSteg'], cipher_text)['hiddenText']}")
+    console.print(f"\tBinary: {try_decode(libs['UnicodeStegBinary'], cipher_text)['hiddenData']}")
     
-    print("\n[2] Zero-Width-Lib:")
-    print(f"\tText: {try_decode(libs['ZeroWidthLib'], cipher_text)}")
+    console.print("\n[2] Zero-Width-Lib:")
+    console.print(f"\tText: {try_decode(libs['ZeroWidthLib'], cipher_text)}")
 
-    print("\n[3] Zwsp-Steg-Js:")
-    print(f"\tText1: {try_decode(libs['ZxwspStegJs_ZWSP'], cipher_text)}")
-    print(f"\tText2: {try_decode(libs['ZxwspStegJs_FULL'], cipher_text)}")
+    console.print("\n[3] Zwsp-Steg-Js:")
+    console.print(f"\tText1: {try_decode(libs['ZxwspStegJs_ZWSP'], cipher_text)}")
+    console.print(f"\tText2: {try_decode(libs['ZxwspStegJs_FULL'], cipher_text)}")
     
-    print("\n[4] text_blind_watermark:")
-    print(f"\tText: {try_decode(libs['Decode_TextBlindWatermark'], cipher_text)}")
+    console.print("\n[4] text_blind_watermark:")
+    console.print(f"\tText: {try_decode(libs['Decode_TextBlindWatermark'], cipher_text)}")
+    
+    console.print("\n[5] morse-encrypt:")
+    console.print(f"\tMorse: {try_decode(libs['MorseEncrypt_decodeByMorse'], cipher_text)}")
+    console.print(f"\tUnicode: {try_decode(libs['MorseEncrypt_decodeByUnicode'], cipher_text)}")
     os.system("pause")
