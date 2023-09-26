@@ -54,7 +54,7 @@ if __name__ == '__main__':
             FileNameLengthPos = pos + 20
             FileNameLength = int.from_bytes(data[FileNameLengthPos:FileNameLengthPos+2], byteorder="little", signed=False)
             FileNamePos = FileNameLengthPos + 18
-            FileName = data[FileNamePos:FileNamePos+FileNameLength]
+            FileName = data[FileNamePos:FileNamePos+FileNameLength].decode('gbk')
             
             hexStr1 = ' '.join(re.findall(".{2}", data[iter.start():iter.start()+8].hex().upper()))
             hexStr2 = ' '.join(re.findall(".{2}", data[iter.start()+8:iter.start()+10].hex().upper()))
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             if int.from_bytes(data[pos:pos+2], byteorder="little", signed=False)  % 2 != 0:
                 data[pos:pos+2] = b"\x00\x00"
                 table.add_row(
-                    f"[green]{bytes(FileName)}[/green]",
+                    f"[green]{FileName}[/green]",
                     f"[purple]{hexStr1}[/purple] [red]{hexStr2}[/red]",
                     f"[blue]{value}[/blue]",
                     "[red]可能存在伪加密![/red]"
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                 num += 1
             else:
                 table.add_row(
-                    f"[green]{bytes(FileName)}[/green]",
+                    f"[green]{FileName}[/green]",
                     f"[purple]{hexStr1}[/purple] [green]{hexStr2}[/green]",
                     f"[blue]{value}[/blue]",
                     "不存在伪加密!"
