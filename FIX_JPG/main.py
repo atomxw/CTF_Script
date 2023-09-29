@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import argparse
 
@@ -17,19 +18,24 @@ if __name__ == '__main__':
     shffleName = shfflePath.split("\\")[-1]
     
     with open(filePath, "rb") as f:
-        data = f.read()
+        data = bytearray(f.read())
+        
+    sof_lis = [b"\xff\xc0\x00\x11\x08", b"\xFF\xC2\x00\x11\x08"]
 
-    if (index := data.rfind(b"\xff\xc0\x00\x11\x08")) == -1:
+    flag = False
+    for sof in sof_lis:
+        for iter in re.finditer(re.escape(sof), data):
+            flag = True
+            height = int.from_bytes(data[iter.end():iter.end()+2], byteorder="big", signed=False)
+            data[iter.end():iter.end()+2] = int(height * args.n).to_bytes(2, byteorder="big", signed=False)
+        
+    if not flag:
         print("没有找到SOFx层!")
         time.sleep(0.5)
         exit(-1)
-        
-    index += 5
-    height = int.from_bytes(data[index:index+2], byteorder="big", signed=False) * args.n
-    
-    out_data = data[:index] + height.to_bytes(2, byteorder="big", signed=False) + data[index+2:]
-    with open("fix_1.jpg", "wb") as f:
-        f.write(out_data)
-    print(f"图像高度已经修改为了{args.n}倍!")
-    time.sleep(0.5)
-    
+    else:
+        print(f"原始图像高度: {height}, 已经修改为了{args.n}倍!")
+        with open("fix_1.jpg", "wb") as f:
+            f.write(data)
+        time.sleep(0.5)
+        exit()
