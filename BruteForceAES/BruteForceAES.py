@@ -18,12 +18,12 @@ def read_large_file(file_path):
                 if mm.tell() == len(mm):
                     break
     
-def producer(dic_path, queue, thread_num):
+def producer(dic_path, queue_password, thread_num):
     for password in read_large_file(dic_path):
-        queue.put(password)
+        queue_password.put(password)
     
     for _ in range(thread_num):
-        queue.put(None)
+        queue_password.put(None)
 
 def consumer(queue_password, version):
     global enc, f
